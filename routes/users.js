@@ -144,7 +144,10 @@ router.get('/message', (req, res) => {
 // GET ALL RECIPES //
  router.get('/recipes',(req, res) => {
    try {
-
+    
+    res.json({
+      success: true
+    })
 
    } catch (err) {
     console.error(err);
@@ -154,5 +157,31 @@ router.get('/message', (req, res) => {
     });
    }
  });
+
+ // CREATE NEW CART
+ router.get('/cart/:recipeID',(req, res) => {
+  try {
+    const newCart = {
+      ...req.body,
+      createdAt: new Date(),
+      lastModified: new Date(),
+      id: uuid()
+    };
+
+    //const dataResult = await db().collection("userCart").insertOne(newCart);
+    //console.log(dataResult);
+
+    res.json({
+      success: true
+    })
+
+  } catch (err) {
+   console.error(err);
+   res.json({
+     success: false,
+     error: err.toString()
+   });
+  }
+});
 
 module.exports = router;
