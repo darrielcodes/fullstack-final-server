@@ -158,8 +158,25 @@ router.get('/message', (req, res) => {
    }
  });
 
- // CREATE NEW CART
+ // GET IND RECIPE
  router.get('/cart/:recipeID',(req, res) => {
+  try {
+    
+    res.json({
+      success: true
+    })
+
+  } catch (err) {
+   console.error(err);
+   res.json({
+     success: false,
+     error: err.toString()
+   });
+  }
+});
+
+// CREATE NEW CART
+router.post('/create-one', async (req, res) => {
   try {
     const newCart = {
       ...req.body,
