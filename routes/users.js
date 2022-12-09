@@ -180,6 +180,7 @@ router.post('/create-one', async (req, res) => {
   try {
     const tokenHeaderKey = process.env.TOKEN_HEADER_KEY;
     const token = req.header(tokenHeaderKey);
+    
 
     const newCart = {
       ...req.body,
@@ -189,6 +190,11 @@ router.post('/create-one', async (req, res) => {
       userId: token
     };
 
+    const findUser = await db().collection("users").find([{
+      email: req.body.email
+    }])
+    console.log(req.body.email)
+    console.log(findUser)
     const createdCart = await db().collection("userCart").insertOne(newCart);
     console.log(createdCart);
 
@@ -206,7 +212,8 @@ router.post('/create-one', async (req, res) => {
   }
 });
 
-router.post('/checkout', async (req, res) => {
+// CREATE NEW ORDER
+router.get('/checkout', async (req, res) => {
   try {
     
     const tokenHeaderKey = process.env.TOKEN_HEADER_KEY;
@@ -214,7 +221,7 @@ router.post('/checkout', async (req, res) => {
     console.log(token)
     //const userId = req.body.userId
     const findCart = db().collection("userCart").find([{
-      userId: token
+      id: token
     }])
     
     
