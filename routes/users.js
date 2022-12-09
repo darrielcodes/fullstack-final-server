@@ -159,7 +159,7 @@ router.get('/message', (req, res) => {
  });
 
  // GET IND RECIPE
- router.get('/cart/:recipeID',(req, res) => {
+ router.get('/recipe/:recipeID',(req, res) => {
   try {
     
     res.json({
@@ -178,18 +178,23 @@ router.get('/message', (req, res) => {
 // CREATE NEW CART
 router.post('/create-one', async (req, res) => {
   try {
+    const tokenHeaderKey = process.env.TOKEN_HEADER_KEY;
+    const token = req.header(tokenHeaderKey);
+
     const newCart = {
       ...req.body,
       createdAt: new Date(),
       lastModified: new Date(),
-      id: uuid()
+      id: uuid(),
+      userId: token
     };
 
-    //const dataResult = await db().collection("userCart").insertOne(newCart);
-    //console.log(dataResult);
+    const createdCart = await db().collection("userCart").insertOne(newCart);
+    console.log(createdCart);
 
     res.json({
-      success: true
+      success: true,
+      newCart: newCart
     })
 
   } catch (err) {
@@ -200,5 +205,32 @@ router.post('/create-one', async (req, res) => {
    });
   }
 });
+
+router.post('/checkout', async (req, res) => {
+  try {
+    
+    const tokenHeaderKey = process.env.TOKEN_HEADER_KEY;
+    const token = req.header(tokenHeaderKey);
+    console.log(token)
+    //const userId = req.body.userId
+    const findCart = db().collection("userCart").find([{
+      userId: token
+    }])
+    
+    
+    res.json({
+      success: true,
+      findCart: findCart
+    })
+
+  } catch (err) {
+    console.error(err);
+    res.json({
+      success: false,
+      error: err.toString()
+    });
+  }
+});
+
 
 module.exports = router;
