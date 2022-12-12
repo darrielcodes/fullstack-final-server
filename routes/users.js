@@ -73,7 +73,8 @@ router.post('/login', async (req, res) => {
       const userData = {
         date: new Date(),
         userID: foundUser.id,
-        scope: userType
+        scope: userType,
+        email: foundUser.email
       }
       // create JSON webtoken:
      const exp = Math.floor(Date.now() / 1000) + (60 * 60)
@@ -181,22 +182,33 @@ router.post('/create-one', async (req, res) => {
     const tokenHeaderKey = process.env.TOKEN_HEADER_KEY;
     const token = req.header(tokenHeaderKey);
     
-
-    const newCart = {
-      ...req.body,
+    const jwtSecretKey = process.env.JWT_SECRET_KEY;
+    const verified = jwt.verify(token, jwtSecretKey);
+    console.log(verified.userData.email)
+    const userEmail = verified.userData.email
+    const userInfo = {
       createdAt: new Date(),
       lastModified: new Date(),
       id: uuid(),
-      userId: token
-    };
+      userEmail: userEmail
+    }
+    const newCart = []
+    newCart.push(...req.body);
+    newCart.push(userInfo);
 
     const findUser = await db().collection("users").find([{
-      email: req.body.email
-    }])
-    console.log(req.body.email)
-    console.log(findUser)
-    const createdCart = await db().collection("userCart").insertOne(newCart);
-    console.log(createdCart);
+      email: userEmail
+    }]);
+
+      const updateCart = await db().collection("users").update(
+      {
+        email: userEmail
+      },{
+        $push: {
+          newCart
+        }
+      });
+      
 
     res.json({
       success: true,
@@ -212,24 +224,81 @@ router.post('/create-one', async (req, res) => {
   }
 });
 
-// CREATE NEW ORDER
+// GET ALL CART ITEMS
 router.get('/checkout', async (req, res) => {
   try {
     
     const tokenHeaderKey = process.env.TOKEN_HEADER_KEY;
     const token = req.header(tokenHeaderKey);
     console.log(token)
-    //const userId = req.body.userId
-    const findCart = db().collection("userCart").find([{
-      id: token
-    }])
+    const jwtSecretKey = process.env.JWT_SECRET_KEY;
+    const verified = jwt.verify(token, jwtSecretKey);
+    console.log(verified.userData.email)
+    const userEmail = verified.userData.email
     
     
+    const foundUser = await db().collection("users").find({
+      email: userEmail
+    }).toArray();
+    console.log(foundUser)
+
     res.json({
       success: true,
-      findCart: findCart
+      foundUser: foundUser
     })
 
+  } catch (err) {
+    console.error(err);
+    res.json({
+      success: false,
+      error: err.toString()
+    });
+  }
+});
+
+// CREATE NEW ORDER
+router.post('/create-order', async (req, res) => {
+  try {
+    const tokenHeaderKey = process.env.TOKEN_HEADER_KEY;
+    const token = req.header(tokenHeaderKey);
+    const jwtSecretKey = process.env.JWT_SECRET_KEY;
+    const verified = jwt.verify(token, jwtSecretKey);
+
+    console.log(verified.userData.email)
+    const userEmail = verified.userData.email
+
+    const newOrder = {
+      ...req.body,
+      orderID: uuid()
+    }
+
+    const updateCart = await db().collection("users").updateOne(
+      {
+        email: userEmail
+      },{
+        $push: {
+          newOrder
+        }
+      }, {
+        $pull: {
+          newCart
+        }
+      });
+
+    //   const emptyCart = await db().collection("users").update({
+    //     email: userEmail
+    //   }, {
+    //   $pull: {
+    //     newCart: {
+    //       $exists: true
+    //     }
+    //   }},
+    // );
+
+    res.json({
+      success: true,
+      newOrder: newOrder
+    })
   } catch (err) {
     console.error(err);
     res.json({
