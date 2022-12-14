@@ -266,35 +266,29 @@ router.post('/create-order', async (req, res) => {
 
     console.log(verified.userData.email)
     const userEmail = verified.userData.email
-
-    const newOrder = {
-      ...req.body,
-      orderID: uuid()
+    const orderID = uuid()
+    const userInfo = {
+      orderID,
+      createdAt: new Date()
     }
+    const newOrder = []
+    newOrder.push(...req.body);
+    newOrder.push(userInfo);
+    console.log(req.body)
 
-    const updateCart = await db().collection("users").updateOne(
+    const createCart = await db().collection("users").updateOne(
       {
         email: userEmail
       },{
-        $push: {
-          newOrder
+        $set: {
+          "newCart": []
+        },
+          $push: {
+            newOrder,
+            orderHistory: orderID
         }
-      }, {
-        $pull: {
-          newCart
-        }
-      });
-
-    //   const emptyCart = await db().collection("users").update({
-    //     email: userEmail
-    //   }, {
-    //   $pull: {
-    //     newCart: {
-    //       $exists: true
-    //     }
-    //   }},
-    // );
-
+      }
+    );
     res.json({
       success: true,
       newOrder: newOrder
@@ -307,6 +301,9 @@ router.post('/create-order', async (req, res) => {
     });
   }
 });
+
+//VIEW USER INFO/ORDER HISTORY
+
 
 
 module.exports = router;
