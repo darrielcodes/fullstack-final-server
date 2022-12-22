@@ -16,6 +16,8 @@ router.post('/register', async (req, res) => {
   try {
     const email = req.body.email;
     const password = req.body.password;
+    const name = req.body.name;
+    const phone = req.body.phone;
 
     const saltRounds = 5;
     const salt = await bcrypt.genSalt(saltRounds);
@@ -23,6 +25,8 @@ router.post('/register', async (req, res) => {
     
     user = {
       email,
+      name,
+      phone,
       password: hash,
       id: uuid()
     };
@@ -30,7 +34,8 @@ router.post('/register', async (req, res) => {
     const insertUser = db().collection('users').insertOne(user);
 
     res.json({
-      success: true
+      success: true,
+      user: insertUser
     });
 
   } catch (err){
@@ -303,7 +308,70 @@ router.post('/create-order', async (req, res) => {
 });
 
 //VIEW USER INFO/ORDER HISTORY
+router.get('/user-info', async (req, res) => {
+  try {
+    const tokenHeaderKey = process.env.TOKEN_HEADER_KEY;
+    const token = req.header(tokenHeaderKey);
+    console.log(token)
+    const jwtSecretKey = process.env.JWT_SECRET_KEY;
+    const verified = jwt.verify(token, jwtSecretKey);
+    console.log(verified.userData.email)
+    const userEmail = verified.userData.email
+    
+    
+    const foundUser = await db().collection("users").find({
+      email: userEmail
+    }).toArray();
+    console.log(foundUser)
 
+    res.json({
+      success: true,
+      foundUser: foundUser
+    })
+  } catch (err) {
+    console.error(err);
+    res.json({
+      success: false,
+      error: err.toString()
+    });
+  }
+});
 
+router.get('/order-history/:id', async (req, res) => {
+  try {
+    const tokenHeaderKey = process.env.TOKEN_HEADER_KEY;
+    const token = req.header(tokenHeaderKey);
+    console.log(token)
+    const jwtSecretKey = process.env.JWT_SECRET_KEY;
+    const verified = jwt.verify(token, jwtSecretKey);
+    
+    const userEmail = verified.userData.email;
+    const id = req.params.id;
+    
+
+    // const foundOrderInfo = await db().collection("users").find({
+    //   newOrder: {
+    //     orderId: id
+    //   }
+    // },).toArray()
+    const foundOrder = await db().collection("users").find({
+      orderHistory: id
+    }).toArray()
+
+   // if (foundOrder.orderHistory)
+
+    console.log(foundOrder[0].newOrder.orderID);
+    res.json({
+      success: true,
+      foundOrder: foundOrder
+    })
+  } catch (err) {
+    console.error(err);
+    res.json({
+      success: false,
+      error: err.toString()
+    });
+  }
+})
 
 module.exports = router;
