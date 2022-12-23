@@ -374,4 +374,81 @@ router.get('/order-history/:id', async (req, res) => {
   }
 })
 
+//UPDATE USER INFO
+router.put('/update-name/:id', async (req,res) => {
+  try {
+    const id = req.params.id;
+    const name = req.body.name;
+    const phone = req.body.phone;
+    
+    console.log(req.body)
+    const updateInfo = await db().collection("users").update({
+     id: id
+     }, {
+      $set: {
+        name: name
+      },
+    })
+
+  res.json({
+      success: true,
+      updatedInfo: updateInfo
+    })
+  } catch (err) {
+    console.error(err);
+    res.json({
+      success: false,
+      error: err.toString()
+    });
+  }
+});
+
+router.put('/update-phone/:id', async (req,res) => {
+  try {
+    const id = req.params.id;
+    const name = req.body.name;
+    const phone = req.body.phone;
+    
+    const updateInfo = await db().collection("users").update({
+     id: id
+     }, {
+      $set: {
+        phone
+      },
+    })
+
+  res.json({
+      success: true,
+      updatedInfo: updateInfo
+    })
+  } catch (err) {
+    console.error(err);
+    res.json({
+      success: false,
+      error: err.toString()
+    });
+  }
+});
+
+//DELETE USER ACCOUNT
+router.delete('/delete-acct/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const deleteAcct = db().collection("users").deleteOne({
+          id: id
+        });
+
+   res.json ({
+            success: true
+          });
+
+    } catch (err){
+        console.error(err);
+        res.json({
+          success: false,
+          error: err.toString()
+        });
+    }
+})
 module.exports = router;
