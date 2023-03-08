@@ -13,7 +13,11 @@ var { mongoConnect } = require('./mongo.js');
 mongoConnect();
 var app = express();
 
-app.use(cors());
+app.use(cors(
+  {
+    origin: process.env.CORS_ORIGIN
+  }
+));
 app.options("*", cors());
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
