@@ -7,12 +7,12 @@ const { uuid } = require("uuidv4")
 let user = {};
 
 /* GET users listing. */
-router.get('/api/', function(req, res, next) {
+router.get('/', function(req, res, next) {
   res.send('respond with a resource');
 });
 
 // REGISTER USER //
-router.post('/api/register', async (req, res) => {
+router.post('/register', async (req, res) => {
   try {
     const email = req.body.email;
     const password = req.body.password;
@@ -48,7 +48,7 @@ router.post('/api/register', async (req, res) => {
 });
 
 // LOGIN USER //
-router.post('/api/login', async (req, res) => {
+router.post('/login', async (req, res) => {
   try {
     const email = req.body.email;
     const password = req.body.password;
@@ -107,7 +107,7 @@ router.post('/api/login', async (req, res) => {
 });
 
 // VERIFY TOKEN //
-router.get('/api/message', (req, res) => {
+router.get('/message', (req, res) => {
   try {
     const tokenHeaderKey = process.env.TOKEN_HEADER_KEY;
     const token = req.header(tokenHeaderKey);
@@ -148,7 +148,7 @@ router.get('/api/message', (req, res) => {
 });
 
 // GET ALL RECIPES //
- router.get('/api/recipes',(req, res) => {
+ router.get('/recipes',(req, res) => {
    try {
     
     res.json({
@@ -165,7 +165,7 @@ router.get('/api/message', (req, res) => {
  });
 
  // GET IND RECIPE
- router.get('/api/recipe/:recipeID',(req, res) => {
+ router.get('/recipe/:recipeID',(req, res) => {
   try {
     
     res.json({
@@ -182,7 +182,7 @@ router.get('/api/message', (req, res) => {
 });
 
 // CREATE NEW CART
-router.post('/api/create-one', async (req, res) => {
+router.post('/create-one', async (req, res) => {
   try {
     const tokenHeaderKey = process.env.TOKEN_HEADER_KEY;
     const token = req.header(tokenHeaderKey);
@@ -230,7 +230,7 @@ router.post('/api/create-one', async (req, res) => {
 });
 
 // GET ALL CART ITEMS
-router.get('/api/checkout', async (req, res) => {
+router.get('/checkout', async (req, res) => {
   try {
     
     const tokenHeaderKey = process.env.TOKEN_HEADER_KEY;
@@ -262,7 +262,7 @@ router.get('/api/checkout', async (req, res) => {
 });
 
 // CREATE NEW ORDER
-router.post('/api/create-order', async (req, res) => {
+router.post('/create-order', async (req, res) => {
   try {
     const tokenHeaderKey = process.env.TOKEN_HEADER_KEY;
     const token = req.header(tokenHeaderKey);
@@ -308,7 +308,7 @@ router.post('/api/create-order', async (req, res) => {
 });
 
 //VIEW USER INFO/ORDER HISTORY
-router.get('/api/user-info', async (req, res) => {
+router.get('/user-info', async (req, res) => {
   try {
     const tokenHeaderKey = process.env.TOKEN_HEADER_KEY;
     const token = req.header(tokenHeaderKey);
@@ -337,7 +337,7 @@ router.get('/api/user-info', async (req, res) => {
   }
 });
 
-router.get('/api/order-history/:id', async (req, res) => {
+router.get('/order-history/:id', async (req, res) => {
   try {
     const tokenHeaderKey = process.env.TOKEN_HEADER_KEY;
     const token = req.header(tokenHeaderKey);
@@ -375,7 +375,7 @@ router.get('/api/order-history/:id', async (req, res) => {
 })
 
 //UPDATE USER INFO
-router.put('/api/update-name/:id', async (req,res) => {
+router.put('/update-name/:id', async (req,res) => {
   try {
     const id = req.params.id;
     const name = req.body.name;
@@ -403,7 +403,7 @@ router.put('/api/update-name/:id', async (req,res) => {
   }
 });
 
-router.put('/api/update-phone/:id', async (req,res) => {
+router.put('/update-phone/:id', async (req,res) => {
   try {
     const id = req.params.id;
     const name = req.body.name;
@@ -431,7 +431,7 @@ router.put('/api/update-phone/:id', async (req,res) => {
 });
 
 //DELETE USER ACCOUNT
-router.delete('/api/delete-acct/:id', async (req, res) => {
+router.delete('/delete-acct/:id', async (req, res) => {
   try {
     const id = req.params.id;
 
